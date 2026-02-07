@@ -1,0 +1,45 @@
+# Jenga-AI V2 — Core Dependencies
+# Install: pip install -r requirements.txt
+# Or use: pip install -e .  (reads from pyproject.toml)
+
+# Deep Learning
+torch>=2.2.0
+transformers>=4.40.0
+datasets>=2.18.0
+safetensors>=0.4.0
+tokenizers>=0.15.0
+
+# LLM Fine-tuning
+peft>=0.10.0
+bitsandbytes>=0.43.0
+accelerate>=0.28.0
+
+# Configuration & Validation
+pydantic>=2.5.0
+pyyaml>=6.0
+
+# Data & Compute
+numpy>=1.26.0
+pandas>=2.2.0
+scikit-learn>=1.4.0
+scipy>=1.12.0
+
+# Experiment Tracking
+mlflow>=2.10.0
+tensorboard>=2.15.0
+
+# Utilities
+tqdm>=4.66.0
+requests>=2.31.0
+filelock>=3.13.0
+huggingface-hub>=0.20.0
+
+# NLP Utilities
+nltk>=3.8.0
+regex>=2023.12.0
+evaluate>=0.4.0
+
+# Graph Neural Networks (optional — install if using GNN models)
+# torch-geometric>=2.5.0
+# torch-scatter>=2.1.0
+# torch-sparse>=0.6.0
