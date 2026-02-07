@@ -1,6 +1,9 @@
 """Task-specific collate functions for DataLoader.
-
-V2 improvements over V1:
+This module defines collate functions for different task types (classification, NER, regression) that handle padding and batching of inputs and labels. Each collator is designed to work with the expected input format for its task type, ensuring that batches are properly prepared for training or evaluation.
+The main classes are:
+- ClassificationCollator: Handles single-label and multi-label classification tasks, including multi-head setups.
+- NERCollator: Handles token classification tasks, padding labels with -100 for ignored positions.
+- RegressionCollator: Handles regression tasks, ensuring proper padding of inputs and labels.
 - Uses functools.partial instead of lambda closures (fixes closure bug)
 - Named classes instead of standalone functions for cleaner organization
 - Proper handling of all task types

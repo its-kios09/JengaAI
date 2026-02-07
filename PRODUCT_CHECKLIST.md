@@ -1,4 +1,4 @@
-# Jenga-AI V2 — Product Checklist
+# Jenga-AI — Product Checklist
 
 **Last updated:** February 7, 2026
 
@@ -7,7 +7,7 @@
 ## ML Framework (jenga_ai/)
 
 ### Core Foundation
-- [x] Pydantic v2 configuration system with validation (`core/config.py`)
+- [x] Pydantic  configuration system with validation (`core/config.py`)
 - [x] MultiTaskModel with dynamic hidden_size detection (`core/model.py`)
 - [x] AttentionFusion with residual + dropout + learnable gate (`core/fusion.py`)
 - [x] ConcatenationFusion alternative (`core/fusion.py`)

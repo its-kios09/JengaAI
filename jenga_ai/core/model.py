@@ -1,14 +1,10 @@
-"""Multi-task model for Jenga-AI V2.
-
-V2 improvements over V1:
-- Dynamic hidden_size auto-detected from encoder config
-- Proper save/load that actually works (V1 from_pretrained was broken)
-- Clean forward pass - labels passed directly, no **kwargs hack
-- Device management built in
-- Encoder layer freezing support
-- Gradient checkpointing support
-- No hardcoded model type checks for token_type_ids
-"""
+"""Multi-task model for Jenga-AI.
+Architecture:
+    Input → Shared Encoder → [Optional Fusion] → Task Head → Output
+    
+    The model processes one task at a time per forward pass, identified
+    
+    """
 
 from __future__ import annotations
 

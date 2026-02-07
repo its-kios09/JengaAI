@@ -1,6 +1,6 @@
-"""Multi-task trainer for Jenga-AI V2.
+"""Multi-task trainer for Jenga-AI.
 
-V2 improvements over V1:
+
 - Mixed-precision training (AMP) with torch.cuda.amp
 - Gradient clipping (configurable max_grad_norm)
 - Gradient accumulation (configurable steps)

@@ -1,12 +1,9 @@
 """Fusion mechanisms for multi-task learning.
-
-V2 improvements over V1:
-- Residual connection (output = shared + fusion) to preserve original signal
-- Dropout for regularization (V1 had none - overfitting risk)
-- Cached task embeddings via nn.Embedding (V1 created tensor every forward pass)
-- Learnable gate to balance shared vs task-specific representations
-- Multiple fusion options: Attention, Concatenation, None
-- No more inefficient expand/unsqueeze patterns
+This module implements different strategies for fusing shared encoder outputs with task-specific information. The main classes are:
+- AttentionFusion: Uses an attention mechanism to combine shared and task-specific representations.
+- ConcatenationFusion: Concatenates shared output with task embedding and projects back to hidden size.
+- NoFusion: A simple passthrough that returns the shared output unchanged.
+The create_fusion function serves as a factory to instantiate the desired fusion mechanism based on configuration.
 """
 
 from __future__ import annotations

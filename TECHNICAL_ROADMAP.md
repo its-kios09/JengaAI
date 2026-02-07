@@ -129,15 +129,15 @@ This flexibility:
 
 ### Core Technology
 
-**Foundation: Jenga-AI V2 Framework (rebuilt from scratch)**
+**Foundation: Jenga-AI Framework**
 - Multi-task learning with dynamic encoder hidden_size detection
-- Pydantic v2 configuration with full validation (replacing V1 dataclasses)
+- Pydantic  configuration with full validation 
 - Improved AttentionFusion with residual connections, learnable gating, dropout, LayerNorm
 - Mixed-precision training (AMP) with gradient clipping and accumulation
 - Callback-based training architecture (logging, early stopping, checkpointing)
-- Class-based data collators (fixing V1 lambda closure bug)
-- Real eval loss computation (replacing V1's fake 1-f1 hack)
-- Structured logging replacing V1's print() statements
+- Class-based data collators
+- Real eval loss computation 
+- Structured logging 
 - Task registry pattern for extensible task types
 - Support for 6+ NLP tasks (single/multi-label classification, NER, sentiment, regression, LLM fine-tuning)
 
@@ -154,8 +154,8 @@ This flexibility:
 - Human-in-the-Loop routing with uncertainty estimation and priority queuing
 
 **Web Platform Layer:**
-- Low-code visual interface on top of the V2 framework
-- Backend API (FastAPI) wraps V2 Python modules
+- Low-code visual interface on top of the framework
+- Backend API (FastAPI) wraps Python modules
 - Background job processing (Celery) for training
 - Real-time monitoring (WebSocket) for progress updates
 - Model registry and deployment infrastructure
@@ -187,7 +187,7 @@ This flexibility:
 #### ML Infrastructure
 | Component | Technology | Rationale |
 |-----------|------------|-----------|
-| Core | Jenga-AI V2 (rebuilt) | Multi-task learning, Pydantic configs, AMP, callbacks |
+| Core | Jenga-AI | Multi-task learning, Pydantic configs, AMP, callbacks |
 | Deep Learning | PyTorch 2.x | Industry standard, AMP support |
 | Transformers | HuggingFace Transformers | Pre-trained encoders, auto hidden_size detection |
 | Graph Networks | PyTorch Geometric (PyG) | GCN/GAT/GraphSAGE for fraud & corruption networks |
@@ -262,7 +262,7 @@ This flexibility:
         ┌────────────────┼────────────────┐
         ▼                ▼                ▼
 ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│  Jenga-AI V2 │  │   RunPod     │  │   MLflow     │
+│  Jenga-AI  │  │   RunPod     │  │   MLflow     │
 │  Framework   │  │     API      │  │  Tracking    │
 │              │  │              │  │              │
 │ - core/      │  │ (External    │  │ - Metrics    │
@@ -312,7 +312,7 @@ This flexibility:
 - Rate limiting (prevent DDoS)
 - Input validation (prevent injection attacks)
 
-**ML-Level Security (V2):**
+**ML-Level Security :**
 - Adversarial training (FGSM/PGD attacks on embeddings) to harden models
 - Hash-chained audit trail for every prediction, training run, and data access
 - Explainability engine generating human-readable reports for government analysts
@@ -320,7 +320,7 @@ This flexibility:
 - Uncertainty estimation (entropy, margin) for automatic confidence scoring
 - Post-quantum readiness via algorithm-agile cryptographic hashing (SHA-256 default, swappable)
 
-**Emerging Threat Considerations (V2):**
+**Emerging Threat Considerations:**
 - AI-enhanced cyber attacks: adversarial robustness testing built into training pipeline
 - Quantum computing threats: algorithm-agile hash functions in audit module
 - Deepfake/synthetic content: multi-modal verification support (text + metadata)
@@ -333,7 +333,7 @@ This flexibility:
 - Data export (user can download their data)
 - Audit trail exportable for regulatory review
 
-### Advanced Model Architectures (V2)
+### Model Architectures
 
 **Graph Neural Networks (GNNs) — for relationship-based threats:**
 
@@ -423,7 +423,7 @@ Prediction → Uncertainty Check → Confidence > threshold?
 - Mobile SDKs
 - Full MLflow UI integration
 
-### Now In-Scope (V2 Additions)
+### -Scope(Additions)
 
 - Explainability/attention visualization (built into security module)
 - Graph Neural Networks for fraud/corruption detection
@@ -1230,7 +1230,7 @@ Jenga-AI Low-Code Platform represents a **transformative opportunity** to democr
 2. **Compute marketplace:** Flexibility and user choice (not locked in)
 3. **National security focus:** GNN fraud detection, LSTM threat analysis, adversarial-hardened models
 4. **Trust & transparency:** Explainable AI, hash-chained audit trail, human-in-the-loop review
-5. **V2 rebuilt core:** Dynamic configs, AMP training, callback architecture, real metrics
+5. **core:** Dynamic configs, AMP training, callback architecture, real metrics
 6. **Future-proof:** Post-quantum ready hashing, AI-threat awareness, algorithm-agile design
 7. **Aggressive timeline:** MVP in 12 weeks
 

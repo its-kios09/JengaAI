@@ -1,6 +1,6 @@
 """Regression task for Jenga-AI.
 
-New in V2 - V1 had only a stub. Supports continuous output
+Supports continuous output
 prediction with MSE or MAE loss.
 """
 

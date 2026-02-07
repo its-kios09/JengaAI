@@ -327,7 +327,7 @@ Trained Model → [LoRA adapter] → [4-bit Quantization] → Compact Model (edg
 
 ```
 jenga_ai/
-├── core/           Config (Pydantic v2), Model, Fusion
+├── core/           Config (Pydantic ), Model, Fusion
 ├── tasks/          Classification, NER, Sentiment, Regression, Registry
 ├── data/           DataProcessor (JSON/JSONL/CSV), Collators
 ├── training/       Trainer (AMP, checkpoints, callbacks), Metrics
@@ -370,50 +370,31 @@ jenga_ai/
 - Class-based collators (no Python closure bugs)
 
 ### Configuration
-- **Pydantic v2** with full validation — bad configs fail immediately with clear messages
+- **Pydantic** with full validation — bad configs fail immediately with clear messages
 - YAML-driven experiments — define everything in one file
 - Dynamic hidden_size — auto-detected from any HuggingFace encoder
 - `to_dict()`, `to_yaml()`, `from_yaml()` serialization
 
 ---
 
-## V2 Improvements Over V1
-
-| Area | V1 | V2 |
-|------|----|----|
-| Hidden size | Hardcoded `768` | Dynamic from encoder config |
-| Config | Dataclasses, no validation | Pydantic v2 with validators |
-| Fusion | No dropout or residual | Residual + dropout + learnable gate |
-| Training | No AMP, no checkpoints | AMP, grad clip, checkpoints, callbacks |
-| Eval loss | Faked as `1 - f1` | Real loss computation |
-| Data | JSON/JSONL only, hardcoded column | JSON/JSONL/CSV, configurable columns |
-| Collators | Lambda closure bug | Class-based collators |
-| Logging | `print()` | Python `logging` module |
-| Tasks | Classification + NER only | + Sentiment, Regression, custom registry |
-| Security | None | Adversarial, explainability, audit, HITL |
-| Packaging | `setup.py` | `pyproject.toml` |
-
----
 
 ## Project Documents
 
 | Document | Description |
 |----------|-------------|
-| [PLAN.md](PLAN.md) | Full 24-step V2 build plan |
+| [PLAN.md](PLAN.md) | Full 24-step build plan |
 | [OVERVIEW.md](OVERVIEW.md) | Technical overview for developers and non-technical users |
 | [ABSTRACT.md](ABSTRACT.md) | Project abstract and use cases |
 | [TECHNICAL_ROADMAP.md](TECHNICAL_ROADMAP.md) | 12-week MVP development roadmap |
 | [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | Detailed implementation specifications |
-| [SESSION_LOG.md](SESSION_LOG.md) | Build session history and resume guide |
-| [CHANGELOG.md](CHANGELOG.md) | Version history |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |
 
 ---
 
 ## Roadmap
 
-### Current (V2 Core)
-- [x] Pydantic v2 configuration system
+### Current (Core)
+- [x] Pydantic configuration system
 - [x] Multi-task model with dynamic hidden_size
 - [x] Attention fusion with residual + gating
 - [x] 5 task types (classification, NER, sentiment, regression, multi-label)

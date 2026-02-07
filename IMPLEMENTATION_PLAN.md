@@ -1,15 +1,10 @@
 # JengaAI Low-Code Platform: Complete Implementation Plan
 
 **Project:** JengaAI Low-Code NLP Platform
-**Version:** 2.0 (V2 Rebuild)
+**Version:** 1.0 
 **Last Updated:** 2026-02-07
 **Team:** ML Engineer + Frontend Developer
-**Status:** V2 core ML framework BUILT. Backend/Frontend in progress.
-
-> **V2 NOTE:** This document has been updated to reflect the V2 rebuild.
-> The original V1 plan (below) remains for reference. See the **V2 ADDENDUM**
-> section at the bottom for all changes, new security modules, and the
-> rebuilt core framework architecture.
+**Status:** core ML framework BUILT. Backend/Frontend in progress.
 
 ---
 
@@ -1452,102 +1447,8 @@ CREATE TABLE audit_logs (
 - [ ] 5 compute options functional
 - [ ] Real-time monitoring works without refresh
 
-### 6-Month Success (Post-Launch)
 
-**User Growth:**
-- 500+ registered users
-- 200+ monthly active users (MAU)
-- 30% user retention after 30 days
-
-**Platform Usage:**
-- 1000+ models trained
-- 10,000+ inference requests
-- 50+ models deployed in production
-
-**Business Impact:**
-- 10+ security models in Kenyan government
-- 20+ agricultural models in use
-- 5+ paying customers (Pro tier)
-- $1000+ MRR (monthly recurring revenue)
-
-**Community:**
-- 100+ GitHub stars
-- 20+ community contributions
-- 10+ case studies published
-
----
-
-## Next Steps
-
-### Immediate (Week 1, Day 1)
-1. **Team Kickoff Meeting**
-   - Review this plan together
-   - Assign initial tasks
-   - Set up communication channels (Slack, Discord, etc.)
-   - Agree on meeting schedule
-
-2. **Set Up Development Environment**
-   - Install Docker, Node.js, Python
-   - Clone repository
-   - Create feature branches
-   - Test that dev environment works
-
-3. **Sprint Planning**
-   - Break down Week 1 tasks into daily todos
-   - Estimate time for each task
-   - Identify blockers
-
-### Weekly Rituals
-- **Monday:** Sprint planning, assign tasks
-- **Daily:** 15-minute standup (async or sync)
-- **Friday:** Demo progress, retrospective
-- **Sunday:** Week review, plan next week
-
-### Communication
-- **Slack/Discord:** Daily updates
-- **GitHub:** All code, PRs, issues
-- **Google Docs:** Documentation, notes
-- **Loom:** Demo videos, async communication
-
-### Incubation Submission Checklist
-- [ ] Technical Roadmap PDF (from TECHNICAL_ROADMAP.md)
-- [ ] Live staging deployment
-- [ ] Demo video (3-5 min)
-- [ ] Pitch deck (10 slides)
-- [ ] User documentation
-- [ ] GitHub repository
-- [ ] Beta user list
-- [ ] Financial projections
-
----
-
-**Good luck! Let's build something amazing for Africa!**
-
----
----
-
-# V2 ADDENDUM: Complete Rebuild (February 2026)
-
-## What Changed and Why
-
-The V1 framework (in `/home/naynek/Desktop/JengaAI/`) was a research-grade Python-only NLP framework. After thorough analysis, we identified critical gaps that required a **complete rebuild** of the core ML framework before building the web platform.
-
-### V1 Issues Discovered
-
-| Category | Issue | Impact |
-|----------|-------|--------|
-| **Hardcoded sizes** | `nn.Linear(768, num_labels)` in all tasks | Breaks with any non-BERT-base model |
-| **Config system** | Dataclasses with no validation | Invalid configs cause cryptic runtime errors |
-| **Fusion** | No dropout/residual, tensor created each forward | Overfitting + memory inefficiency |
-| **Training** | No AMP, no checkpoints, no gradient clipping | Slow, fragile, can't resume from crash |
-| **Data** | Hardcoded `tasks[0]`, no CSV, no single-label | Multi-task data processing broken |
-| **Collators** | Lambda closures capture loop variable | Silent bugs in dataloading |
-| **Eval loss** | Computed as `1 - f1` instead of real loss | Early stopping/best model selection wrong |
-| **Logging** | `print()` statements | Not production-ready |
-| **No web layer** | CLI-only, no API, no frontend | Users must write Python |
-| **No security** | No adversarial training, no audit, no HITL | Not suitable for government deployment |
-
-### V2 Core Framework (BUILT)
+### Core Framework (BUILT)
 
 The following modules have been built fresh in `jenga_ai/`:
 
@@ -1581,7 +1482,7 @@ jenga_ai/                           # 25 Python modules, ~2500 lines
   models/hybrid/                    # Multi-modal models (planned)
 ```
 
-### V2 New Security Modules
+### New Security Modules
 
 #### Adversarial Training (`security/adversarial.py`)
 - FGSM and PGD attacks on embeddings
@@ -1611,7 +1512,7 @@ jenga_ai/                           # 25 Python modules, ~2500 lines
 - Policy-based routing (certain tasks always require human)
 - Required for: National security decisions, building analyst trust
 
-### V2 Advanced Training Techniques (BUILT)
+### Advanced Training Techniques (BUILT)
 
 #### Continual Learning (`training/continual.py`)
 Prevents catastrophic forgetting when models learn new tasks/data:
@@ -1640,7 +1541,7 @@ Techniques that improve generalization and handle class imbalance:
 - **Knowledge Distillation** — Compress SwahiliBERT → SwahiliDistilBERT with teacher-student training
 - **RegularizationManager** — Combine multiple techniques in one training run
 
-### V2 Model Compression & Quantization
+### Model Compression & Quantization
 
 | Method | What It Does | Size Reduction | Use Case |
 |--------|-------------|---------------|----------|
@@ -1651,7 +1552,7 @@ Techniques that improve generalization and handle class imbalance:
 | **SwahiliDistilBERT** | Pre-trained distilled model | 40% smaller, 60% faster | Default for speed-sensitive tasks |
 | **ONNX export** (planned) | Optimized inference runtime | 2-4x faster inference | Production serving |
 
-### V2 Pre-trained Models
+### Pre-trained Models (out of scope)
 
 | Model | Parameters | Pre-trained For | Source |
 |-------|-----------|----------------|--------|
@@ -1661,7 +1562,7 @@ Techniques that improve generalization and handle class imbalance:
 | **AfroXLMR** | ~270M | Multilingual African | Community model |
 | **Whisper** | 39M-1.5B | Swahili speech-to-text | OpenAI |
 
-### V2 Advanced Model Architectures (Planned)
+### Advanced Model Architectures (Planned)
 
 #### Graph Neural Networks (`models/graph/`)
 Target use cases for Kenya:
@@ -1682,7 +1583,7 @@ Target use cases:
 - Transformer + LSTM (document analysis + temporal patterns)
 - Ensemble approaches for high-stakes security decisions
 
-### V2 Threat Considerations
+### Threat Considerations
 
 #### AI-Enhanced Cyber Threats
 - Adversarial training hardens models against AI-crafted evasion
@@ -1698,7 +1599,7 @@ Target use cases:
 
 | Phase | Week | Focus | Status |
 |-------|------|-------|--------|
-| **Core ML V2** | 1-2 | Config, tasks, fusion, model, data, trainer | COMPLETE |
+| **Core ML** | 1-2 | Config, tasks, fusion, model, data, trainer | COMPLETE |
 | **Security** | 2 | Adversarial, explainability, audit, HITL | COMPLETE |
 | **Advanced Training** | 2-3 | Continual learning, curriculum, regularization | COMPLETE |
 | **LLM Module** | 3 | LoRA fine-tuning, quantization, distillation | Planned |

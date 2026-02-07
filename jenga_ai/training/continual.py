@@ -375,9 +375,9 @@ class ContinualLearningManager:
         manager.after_task("threat_classification", train_dataset)
 
         # Before training on task 2 (new phishing patterns)
-        manager.before_task("phishing_v2", new_dataset)
+        manager.before_task("phishing", new_dataset)
         # ... train — old knowledge is preserved ...
-        manager.after_task("phishing_v2", new_dataset)
+        manager.after_task("phishing", new_dataset)
     """
 
     def __init__(self, model: nn.Module, config: ContinualConfig):

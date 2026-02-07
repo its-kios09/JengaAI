@@ -1,6 +1,6 @@
 """Classification tasks for Jenga-AI.
 
-V2 improvements over V1:
+
 - Dynamic hidden_size from config (not hardcoded 768)
 - Dropout layers in task heads
 - Clean label passing (no kwargs hack)

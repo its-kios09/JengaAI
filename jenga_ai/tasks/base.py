@@ -1,6 +1,7 @@
 """Base task definition for the Jenga-AI multi-task framework.
 
-V2 improvements over V1:
+This module defines the BaseTask class, which serves as an abstract base for all task types in the Jenga-AI framework. Each task type (e.g., classification, NER, regression) will inherit from BaseTask and implement the get_forward_output method to compute task-specific outputs from the shared encoder representations. The TaskOutput dataclass encapsulates the loss and logits returned by each task's forward pass, allowing for a consistent interface across different task types.
+Key features:
 - Accept hidden_size parameter (not hardcoded 768)
 - Proper type annotations with dataclass output
 - Dropout in task heads

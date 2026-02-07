@@ -1,4 +1,4 @@
-"""Security module for Jenga-AI V2.
+"""Security module for Jenga-AI.
 
 Provides tools for building secure, auditable, and explainable AI systems
 for national security, governance, and cyber threat detection in Kenya.

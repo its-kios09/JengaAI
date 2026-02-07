@@ -1,6 +1,4 @@
-"""Training callbacks for Jenga-AI V2.
-
-V1 had no callback system. V2 provides modular callbacks for:
+"""Training callbacks for Jenga-AI  also provides modular callbacks for:
 - Logging (TensorBoard, MLflow)
 - Early stopping
 - Checkpoint saving
@@ -44,9 +42,7 @@ class TrainingCallback:
 
 
 class LoggingCallback(TrainingCallback):
-    """Callback for logging metrics to TensorBoard or MLflow.
-
-    Replaces V1's inline logging code with a clean callback.
+    """Callback for logging metrics to TensorBoard or MLflow, with clean callbacks.
     """
 
     def __init__(self, config: LoggingConfig, output_dir: str) -> None:
@@ -95,9 +91,7 @@ class LoggingCallback(TrainingCallback):
 
 
 class EarlyStoppingCallback(TrainingCallback):
-    """Callback for early stopping based on eval metrics.
-
-    Replaces V1's inline early stopping logic.
+    """Callback for early stopping based on eval metrics, with stopping logic.
     """
 
     def __init__(
@@ -146,7 +140,6 @@ class EarlyStoppingCallback(TrainingCallback):
 class CheckpointCallback(TrainingCallback):
     """Callback for saving model checkpoints.
 
-    V1 had no checkpoint saving. V2 saves checkpoints at configurable
     intervals and keeps only the N most recent.
     """
 

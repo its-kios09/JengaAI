@@ -1,79 +1,15 @@
-# Jenga-AI V2: Complete Rebuild Plan
+# Jenga-AI : Complete Rebuild Plan
 
 ## Overview
 
-This plan covers a **complete fresh rebuild** of the Jenga-AI framework, addressing every weakness found in V1 while preserving its strengths. We build from the ML core outward to the web platform.
+This plan covers the building of JengaAI We build from the ML core outward to the web platform.
 
 ---
 
-## Part 1: Analysis of V1 Weaknesses (What We Fix)
 
-### 1.1 Core ML Framework Issues
+## Architecture
 
-**model.py - MultiTaskModel:**
-- Hidden size `768` is hardcoded in classification tasks (`nn.Linear(768, num_labels)`) instead of reading from `config.hidden_size` - breaks with any non-BERT-base model
-- `forward()` uses `**kwargs` to pass labels which is fragile and undocumented
-- No gradient clipping support
-- No mixed-precision (AMP) training support
-- `get_input_embeddings()` hardcodes `self.encoder.embeddings.word_embeddings` - fails for models with different embedding paths
-- No model saving/loading built into the class
-- No device management - tensors created inside forward (fusion) may land on wrong device
-
-**fusion.py - AttentionFusion:**
-- Creates a new tensor every forward pass: `torch.tensor([task_id], device=...)` - should cache or use `torch.LongTensor`
-- Unsqueeze/expand pattern is inefficient - could use `repeat` or broadcasting
-- No dropout in the attention layer - will overfit
-- No residual connection - original signal can be completely suppressed
-- Softmax over `seq_len` dimension computes token-level attention but doesn't actually fuse task information meaningfully
-
-**config.py:**
-- No validation (e.g., negative num_labels, empty task list, invalid model names)
-- No `to_dict()` or serialization method for saving configs
-- `device` is set at import time, not runtime - problematic for multi-GPU or dynamic device selection
-- Missing configs for: gradient clipping, mixed precision, gradient accumulation, checkpoint saving
-- `TaskConfig` hardcoded to only support `multi_label_classification` and `ner` in data processing
-
-### 1.2 Training Issues
-
-**trainer.py:**
-- No gradient accumulation support
-- No mixed-precision training (AMP)
-- No gradient clipping
-- No checkpoint saving/loading (no resume from crash)
-- No model saving at end of training
-- `eval_loss` is hacked: `1 - f1` or `-f1` instead of computing actual eval loss
-- Lambda closures in `_create_dataloaders` capture loop variable by reference (Python closure bug)
-- No distributed training support
-- No configurable task sampling strategy (only round-robin)
-- No weight for task-level loss balancing during training
-- `print()` statements instead of proper `logging` module
-
-### 1.3 Data Processing Issues
-
-**data_processing.py:**
-- Only supports `multi_label_classification` and `ner` - no `single_label_classification` processing
-- Hardcoded `self.config.tasks[0]` in processing functions - breaks for multiple tasks
-- No CSV support despite being mentioned in docs
-- No data validation or error handling for malformed data
-- No support for text column name configuration (hardcodes `"text"`)
-- Train/test split is hardcoded at 80/20 with seed 42 - not configurable
-- No support for pre-split datasets (separate train/test files)
-
-### 1.4 Architecture Gaps
-
-- **No REST API** - framework is CLI-only
-- **No web platform** - everything requires Python knowledge
-- **No model registry** - trained models are just files on disk
-- **No experiment tracking UI** - relies on external MLflow/TensorBoard
-- **Empty modules**: `utils/logging.py`, `data/universal.py`, `training/data.py`, `training/callbacks.py` are all empty
-- **Seq2Seq skeleton only** - not implemented
-- **No deployment infrastructure** - no Docker, no API server
-
----
-
-## Part 2: V2 Architecture
-
-### 2.1 Project Structure
+### Project Structure
 
 ```
 /home/naynek/Desktop/JengaAI/
@@ -201,32 +137,6 @@ This plan covers a **complete fresh rebuild** of the Jenga-AI framework, address
 └── README.md
 ```
 
-### 2.2 Key V2 Improvements Over V1
-
-| Area | V1 Problem | V2 Solution |
-|------|-----------|-------------|
-| Hidden size | Hardcoded `768` | Dynamic from `config.hidden_size` |
-| Config | Dataclasses, no validation | Pydantic models with validators |
-| Fusion | No dropout/residual, inefficient | Dropout + residual connection + cached embeddings |
-| Training | No AMP, no checkpoints, no grad clipping | Full AMP, checkpoint save/resume, configurable clipping |
-| Data | Only JSON/JSONL, hardcoded task[0] | JSON/JSONL/CSV, per-task processing |
-| Logging | `print()` statements | Python `logging` module |
-| Collate | Lambda closure bug | Named functions with `functools.partial` |
-| Eval | Fake eval_loss from F1 | Real eval loss computation |
-| Tasks | Only multi-label + NER processing | All task types supported |
-| Packaging | `setup.py` | `pyproject.toml` with modern tooling |
-| Forgetting | No continual learning | EWC, replay, LwF, progressive freezing |
-| Curriculum | No curriculum learning | Difficulty-based, nested/hierarchical, task-phased |
-| Regularization | Basic dropout only | Label smoothing, R-Drop, mixup, focal loss, SWA |
-| Compression | None | LoRA, 4-bit/8-bit quantization, knowledge distillation |
-| Pre-trained | Only external models | SwahiliBERT, SwahiliDistilBERT, SwahiliSpacy |
-| API | None | FastAPI with full REST API |
-| Frontend | None | React + TypeScript + TailwindCSS |
-| Tests | 79% coverage, fragile mocks | Target 90%+ with proper fixtures |
-
----
-
-## Part 3: Implementation Steps
 
 ### Phase 1: Core ML Framework (Steps 1-6)
 
@@ -280,7 +190,7 @@ This plan covers a **complete fresh rebuild** of the Jenga-AI framework, address
 - Configurable split ratio and seed
 - Data validation with clear error messages
 - Move collate functions to separate `collators.py` using `functools.partial` (fix closure bug)
-- Support for single-label classification processing (missing in V1)
+- Support for single-label classification processing 
 
 **Step 6: Trainer rebuild**
 - Mixed-precision training (AMP) with `torch.cuda.amp`
@@ -345,7 +255,7 @@ This plan covers a **complete fresh rebuild** of the Jenga-AI framework, address
 ### Phase 3: Inference & Export (Steps 9-10)
 
 **Step 9: Inference handler**
-- Fix `from_pretrained` loading (V1 bug)
+- Fix `from_pretrained` loading 
 - Model caching for faster repeated inference
 - Batch prediction with configurable batch size
 - Confidence scores and probabilities
@@ -460,61 +370,15 @@ This plan covers a **complete fresh rebuild** of the Jenga-AI framework, address
 - Health check endpoints
 
 **Step 24: Documentation + demo**
-- Update IMPLEMENTATION_PLAN.md with V2 changes
-- Update TECHNICAL_ROADMAP.md with V2 architecture
+- Update IMPLEMENTATION_PLAN.md with  changes
+- Update TECHNICAL_ROADMAP.md with  architecture
 - API docs (auto-generated from OpenAPI)
 - User guide
 - Demo video script
 
----
 
-## Part 4: Execution Strategy
 
-### Starting Point: Core ML Framework First
-
-We begin at Step 1 (project scaffolding + config) and build outward. This ensures the foundation is solid before building the platform on top.
-
-### Parallel Agent Strategy
-
-Once the core is stable, we can parallelize:
-- **Agent A**: Backend API (Steps 12-16)
-- **Agent B**: Frontend (Steps 17-22)
-- **Agent C**: Tests (Step 11)
-
-### Priority Order
-
-1. **Steps 1-6** (Core ML) - Must be sequential, each depends on the previous
-2. **Steps 7-8** (LLM) - Can start after Step 6
-3. **Steps 9-10** (Inference/Export) - Can start after Step 4
-4. **Step 11** (Tests) - Can run in parallel as modules complete
-5. **Steps 12-16** (Backend) - Can start after Step 6
-6. **Steps 17-22** (Frontend) - Can start after Step 12
-7. **Steps 23-24** (DevOps) - Final phase
-
-### What We Preserve From V1
-
-- The core concept of multi-task learning with shared encoder + task heads
-- The attention fusion idea (but improved with residual + dropout)
-- The YAML config-driven approach (but with Pydantic validation)
-- The round-robin training strategy (but add alternatives)
-- The LLM fine-tuning with LoRA approach
-- The task type system (classification, NER, etc.)
-- The project vision and market strategy
-
-### What We Rebuild Completely
-
-- Configuration system (dataclasses → Pydantic)
-- Data processing pipeline (fix hardcoded tasks[0], add CSV, add validation)
-- Training loop (add AMP, checkpoints, gradient clipping, proper eval loss)
-- Model class (dynamic hidden size, proper save/load)
-- Fusion mechanism (add residual, dropout, caching)
-- Task heads (dynamic hidden size, dropout)
-- Entire packaging (setup.py → pyproject.toml)
-- All logging (print → logging module)
-
----
-
-## Part 5: Updated Roadmap Summary
+## Part 5: Roadmap Summary
 
 | Week | Focus | Steps | Deliverables |
 |------|-------|-------|-------------|

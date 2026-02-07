@@ -1,6 +1,6 @@
 """Logging utilities for Jenga-AI.
 
-Replaces V1's print() statements with proper Python logging.
+Provides a standardized logging setup for the framework, with support for console and file logging, configurable log levels, and structured log formatting.
 """
 
 import logging

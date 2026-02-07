@@ -1,4 +1,4 @@
-# Jenga-AI V2: Technical Overview
+# Jenga-AI: Technical Overview
 
 This document describes the Jenga-AI framework architecture, how developers use it programmatically, and how non-technical users interact with it through the zero-code web platform.
 
@@ -47,7 +47,7 @@ You can also use **any HuggingFace model** — just specify the model name in yo
 ```
 jenga_ai/
 ├── core/                  # Foundation
-│   ├── config.py          # Pydantic v2 configuration with validation
+│   ├── config.py          # Pydantic  configuration with validation
 │   ├── model.py           # MultiTaskModel (shared encoder + task heads)
 │   └── fusion.py          # Attention fusion with residual + gating
 ├── tasks/                 # Task definitions
@@ -514,7 +514,7 @@ For government and security use cases, trust is critical. The platform provides:
 
 **Dynamic, not hardcoded.** The model automatically detects the encoder's hidden size, supports any HuggingFace transformer, and adapts to the data format provided.
 
-**Validated, not assumed.** Every configuration is validated through Pydantic v2 before any training begins. Invalid settings produce clear error messages, not cryptic runtime crashes.
+**Validated, not assumed.** Every configuration is validated through Pydantic before any training begins. Invalid settings produce clear error messages, not cryptic runtime crashes.
 
 **Auditable, not opaque.** Hash-chained logs, explainable predictions, and human-in-the-loop routing ensure that AI decisions in high-stakes security contexts can always be traced, understood, and challenged.
 

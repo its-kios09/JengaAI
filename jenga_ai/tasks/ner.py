@@ -1,6 +1,5 @@
 """Named Entity Recognition task for Jenga-AI.
 
-V2 improvements over V1:
 - Dynamic hidden_size
 - Dropout in prediction head
 - Proper handling of -100 ignore index

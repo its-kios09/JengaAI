@@ -1,12 +1,5 @@
-"""Pydantic-based configuration system for Jenga-AI V2.
+"""Pydantic-based configuration system for Jenga-AI .
 
-Replaces V1's dataclass configs with full validation, serialization,
-and proper defaults. Every V1 issue is addressed:
-- Dynamic hidden_size (not hardcoded 768)
-- Validation for all fields
-- Configurable AMP, gradient clipping, accumulation, checkpoints
-- Configurable data split ratio and column names
-- Proper serialization (to_dict, to_yaml, from_yaml)
 """
 
 from __future__ import annotations

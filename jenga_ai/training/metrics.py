@@ -1,4 +1,4 @@
-"""Metric computation utilities for Jenga-AI V2.
+"""Metric computation utilities for Jenga-AI .
 
 Provides functions to compute evaluation metrics for different task types.
 """

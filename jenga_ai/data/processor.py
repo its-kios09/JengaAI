@@ -1,13 +1,13 @@
-"""Unified data processor for Jenga-AI V2.
+"""Unified data processor for Jenga-AI.
 
-V2 improvements over V1:
+This module provides a single DataProcessor class that can handle all task types (single-label, multi-label, NER, regression) with flexible configuration. Key features include:
 - Supports JSON, JSONL, and CSV formats with auto-detection
-- Per-task processing (V1 hardcoded tasks[0])
+- Per-task processing
 - Configurable text/label column names
 - Configurable train/test split ratio and seed
 - Support for pre-split datasets (separate train/test files)
 - Data validation with clear error messages
-- Supports ALL task types (V1 only supported multi_label + ner)
+- Supports ALL task types 
 """
 
 from __future__ import annotations

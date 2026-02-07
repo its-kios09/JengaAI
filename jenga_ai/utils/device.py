@@ -1,7 +1,6 @@
 """Device management utilities for Jenga-AI.
 
 Handles device detection, tensor movement, and AMP compatibility checks.
-Fixes V1's issue where device was set at import time.
 """
 
 import logging
