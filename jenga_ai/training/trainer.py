@@ -390,7 +390,7 @@ class Trainer:
 
                 if task_config.type == TaskType.NER:
                     metrics = compute_ner_metrics(preds_np, labels_np)
-                elif task_config.type == TaskType.MULTI_LABEL_CLASSIFICATION:
+                elif task_config.type in (TaskType.MULTI_LABEL_CLASSIFICATION, TaskType.QA):
                     metrics = compute_multi_label_metrics(preds_np, labels_np)
                 elif task_config.type == TaskType.REGRESSION:
                     metrics = compute_regression_metrics(preds_np, labels_np)

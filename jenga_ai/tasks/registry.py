@@ -12,6 +12,7 @@ from ..core.config import TaskConfig, TaskType
 from .base import BaseTask
 from .classification import MultiLabelClassificationTask, SingleLabelClassificationTask
 from .ner import NERTask
+from .qa import QAScoringTask
 from .regression import RegressionTask
 from .sentiment import SentimentTask
 
@@ -30,6 +31,7 @@ class TaskRegistry:
         TaskType.NER.value: NERTask,
         TaskType.SENTIMENT.value: SentimentTask,
         TaskType.REGRESSION.value: RegressionTask,
+        TaskType.QA.value: QAScoringTask,
     }
 
     @classmethod
