@@ -55,6 +55,19 @@ db-down:
 
 db-reset:
 	cd docker && docker compose down -v && docker compose up -d
+
+db-migrate:
+	cd backend && alembic revision --autogenerate -m "$(msg)"
+
+db-upgrade:
+	cd backend && alembic upgrade head
+
+db-downgrade:
+	cd backend && alembic downgrade -1
+
+# Backend
+server:
+	cd backend && uvicorn app.main:app --reload --port 8000
 # Dev
 install:
 	pip install -e .
