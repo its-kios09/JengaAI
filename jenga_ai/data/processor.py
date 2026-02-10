@@ -66,7 +66,7 @@ class DataProcessor:
             task_type = task_config.type
             if task_type == TaskType.SINGLE_LABEL_CLASSIFICATION or task_type == TaskType.SENTIMENT:
                 tokenized = self._process_single_label(dataset, task_config)
-            elif task_type == TaskType.MULTI_LABEL_CLASSIFICATION:
+            elif task_type in (TaskType.MULTI_LABEL_CLASSIFICATION, TaskType.QA):
                 tokenized = self._process_multi_label(dataset, task_config)
             elif task_type == TaskType.NER:
                 tokenized = self._process_ner(dataset, task_config)
