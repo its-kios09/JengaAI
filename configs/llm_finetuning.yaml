@@ -25,7 +25,7 @@ distillation:
   enabled: false
 
 data:
-  path: data/sample_instructions.jsonl
+  path: fixtures/sample_instructions.jsonl
   format: json
   text_column: text
   response_column: response
