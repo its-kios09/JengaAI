@@ -382,12 +382,12 @@ jenga_ai/
 
 | Document | Description |
 |----------|-------------|
-| [PLAN.md](PLAN.md) | Full 24-step build plan |
-| [OVERVIEW.md](OVERVIEW.md) | Technical overview for developers and non-technical users |
-| [ABSTRACT.md](ABSTRACT.md) | Project abstract and use cases |
-| [TECHNICAL_ROADMAP.md](TECHNICAL_ROADMAP.md) | 12-week MVP development roadmap |
-| [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | Detailed implementation specifications |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |
+| [PLAN.md](docs/plan.md) | Full 24-step build plan |
+| [OVERVIEW.md](docs/overview.md) | Technical overview for developers and non-technical users |
+| [ABSTRACT.md](docs/abstract.md) | Project abstract and use cases |
+| [TECHNICAL_ROADMAP.md](docs/technical-roadmap.md) | 12-week MVP development roadmap |
+| [IMPLEMENTATION_PLAN.md](docs/implementation-plan.md) | Detailed implementation specifications |
+| [CONTRIBUTING.md](docs/contributing.md) | Contribution guidelines |
 
 ---
 
@@ -421,7 +421,7 @@ jenga_ai/
 
 ## Contributing
 
-Jenga-AI is open-source and welcomes contributions. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Jenga-AI is open-source and welcomes contributions. See [CONTRIBUTING.md](docs/contributing.md) for guidelines.
 
 Ways to contribute:
 - Add new task types via the registry
