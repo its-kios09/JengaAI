@@ -45,7 +45,16 @@ tensorboard:
 configs:
 	@echo "Available configs:"
 	@ls -1 configs/*.yaml
+	
+# Docker
+db-up:
+	cd docker && docker compose up -d
 
+db-down:
+	cd docker && docker compose down
+
+db-reset:
+	cd docker && docker compose down -v && docker compose up -d
 # Dev
 install:
 	pip install -e .
