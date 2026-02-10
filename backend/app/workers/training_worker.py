@@ -12,7 +12,7 @@ from pathlib import Path
 
 from celery import Celery
 
-from backend.app.config import settings
+from app.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ def run_training_job(
     Returns:
         Dict with final metrics.
     """
-    from backend.app.services.compute_service import compute_service
+    from app.services.compute_service import compute_service
 
     # Update status to running
     compute_service._jobs[job_id] = {

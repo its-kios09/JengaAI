@@ -7,8 +7,8 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
 
-from backend.app.config import settings
-from backend.app.schemas.compute import (
+from app.config import settings
+from app.schemas.compute import (
     CostEstimateRequest,
     CostEstimateResponse,
     ComputeOptionResponse,
@@ -18,7 +18,7 @@ from backend.app.schemas.compute import (
     LaunchJobResponse,
     RunPodKeyRequest,
 )
-from backend.app.services.compute_service import compute_service
+from app.services.compute_service import compute_service
 
 router = APIRouter()
 
