@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.app.config import settings
+from app.config import settings
 
 
 @asynccontextmanager
@@ -50,12 +50,12 @@ async def health_check():
 
 
 # --- API Routers ---
-from backend.app.api.v1 import compute  # noqa: E402
+from app.api.v1 import compute  # noqa: E402
 
 app.include_router(compute.router, prefix="/api/v1/compute", tags=["Compute"])
 
 # Uncomment as they are built:
-# from backend.app.api.v1 import auth, projects, datasets, training, inference, templates
+# from app.api.v1 import auth, projects, datasets, training, inference, templates
 # app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
 # app.include_router(projects.router, prefix="/api/v1/projects", tags=["Projects"])
 # app.include_router(datasets.router, prefix="/api/v1/datasets", tags=["Datasets"])

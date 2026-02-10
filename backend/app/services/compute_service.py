@@ -7,8 +7,8 @@ import uuid
 from pathlib import Path
 from typing import Any, Optional
 
-from backend.app.config import settings
-from backend.app.schemas.compute import (
+from app.config import settings
+from app.schemas.compute import (
     ComputeOptionResponse,
     ComputeProviderResponse,
     CostEstimateResponse,
@@ -216,7 +216,7 @@ class ComputeService:
         }
 
         # In production, this would enqueue a Celery task:
-        # from backend.app.workers.training_worker import run_training_job
+        # from app.workers.training_worker import run_training_job
         # run_training_job.delay(job_id, request.config_yaml, request.project_name)
 
         logger.info("Platform job %s queued (Celery task would be dispatched)", job_id)

@@ -43,3 +43,11 @@ mlruns/
 
 # Logs
 *.log
+
+#env
+.env
+
+# results
+results/*
+
+results/
