@@ -42,6 +42,10 @@ class Settings(BaseSettings):
     NOTEBOOKS_DIR: str = "./generated_notebooks"
     PACKAGES_DIR: str = "./generated_packages"
 
+    RESEND_API_KEY: Optional[str] = None
+    EMAIL_FROM: str = "onboarding@resend.dev"
+    FRONTEND_URL: str = "http://localhost:5173"
+
     model_config = {
         "env_file": str(_env_file),
         "env_file_encoding": "utf-8",
