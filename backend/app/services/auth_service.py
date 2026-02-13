@@ -50,7 +50,6 @@ class AuthService:
         await self.db.commit()
         await self.db.refresh(user)
 
-        # Send verification email
         await self._send_verification_email(user)
 
         logger.info("User registered: %s", user.email)
@@ -97,7 +96,6 @@ class AuthService:
             if existing:
                 raise ValueError("Email already in use")
             user.email = email.lower().strip()
-            # Re-verify on email change
             user.is_verified = False
             await self._send_verification_email(user)
         if full_name:
@@ -137,11 +135,10 @@ class AuthService:
     async def resend_verification(self, email: str) -> None:
         user = await self._get_user_by_email(email.lower().strip())
         if not user or user.is_verified:
-            return  # Silent — don't reveal account state
+            return
         await self._send_verification_email(user)
 
     async def _send_verification_email(self, user: User) -> None:
-        # Invalidate old codes
         existing = await self.db.execute(
             select(EmailVerification).where(
                 and_(
@@ -172,7 +169,6 @@ class AuthService:
             logger.info("Password reset requested for unknown email: %s", email)
             return False
 
-        # Invalidate old codes
         existing = await self.db.execute(
             select(PasswordReset).where(
                 and_(
