@@ -68,6 +68,10 @@ db-downgrade:
 # Backend
 server:
 	cd backend && uvicorn app.main:app --reload --port 8000
+
+# Frontend
+ui:
+	cd frontend && pnpm run dev
 # Dev
 install:
 	pip install -e .
