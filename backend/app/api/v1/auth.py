@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.deps import get_current_user
+from app.core.rate_limit import limiter
 from app.models.user import User
 from app.schemas.auth import (
     ForgotPasswordRequest,
@@ -28,11 +29,13 @@ router = APIRouter()
 
 
 @router.post("/register", response_model=UserResponse, status_code=201)
-async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit("5/minute")
+async def register(request: Request, body: RegisterRequest, db: AsyncSession = Depends(get_db)):
+    """Create a new user account. Rate limited: 5/minute."""
     service = AuthService(db)
     try:
         user = await service.register(
-            email=request.email, password=request.password, full_name=request.full_name
+            email=body.email, password=body.password, full_name=body.full_name
         )
         return user
     except ValueError as exc:
@@ -40,20 +43,24 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db))
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit("10/minute")
+async def login(request: Request, body: LoginRequest, db: AsyncSession = Depends(get_db)):
+    """Authenticate and return tokens. Rate limited: 10/minute."""
     service = AuthService(db)
     try:
-        tokens = await service.login(email=request.email, password=request.password)
+        tokens = await service.login(email=body.email, password=body.password)
         return tokens
     except ValueError as exc:
         raise HTTPException(status_code=401, detail=str(exc))
 
 
 @router.post("/refresh", response_model=TokenResponse)
-async def refresh(request: RefreshRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit("20/minute")
+async def refresh(request: Request, body: RefreshRequest, db: AsyncSession = Depends(get_db)):
+    """Refresh access token. Rate limited: 20/minute."""
     service = AuthService(db)
     try:
-        tokens = await service.refresh_token(request.refresh_token)
+        tokens = await service.refresh_token(body.refresh_token)
         return tokens
     except ValueError as exc:
         raise HTTPException(status_code=401, detail=str(exc))
@@ -81,21 +88,46 @@ async def update_profile(
 
 
 @router.post("/forgot-password", response_model=MessageResponse)
-async def forgot_password(request: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
-    """Request a password reset. Always returns success to prevent email enumeration."""
+@limiter.limit("3/minute")
+async def forgot_password(request: Request, body: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
+    """Request password reset. Rate limited: 3/minute."""
     service = AuthService(db)
-    await service.forgot_password(email=request.email)
+    await service.forgot_password(email=body.email)
     return MessageResponse(
         message="If an account with that email exists, we've sent a password reset link."
     )
 
 
 @router.post("/reset-password", response_model=MessageResponse)
-async def reset_password(request: ResetPasswordRequest, db: AsyncSession = Depends(get_db)):
-    """Reset password using the code from email."""
+@limiter.limit("5/minute")
+async def reset_password(request: Request, body: ResetPasswordRequest, db: AsyncSession = Depends(get_db)):
+    """Reset password with code. Rate limited: 5/minute."""
     service = AuthService(db)
     try:
-        await service.reset_password(code=request.code, new_password=request.new_password)
+        await service.reset_password(code=body.code, new_password=body.new_password)
         return MessageResponse(message="Password reset successfully.")
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
+
+
+@router.post("/verify-email", response_model=MessageResponse)
+@limiter.limit("10/minute")
+async def verify_email(request: Request, code: str, db: AsyncSession = Depends(get_db)):
+    """Verify email address using code sent during registration."""
+    service = AuthService(db)
+    try:
+        await service.verify_email(code=code)
+        return MessageResponse(message="Email verified successfully.")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@router.post("/resend-verification", response_model=MessageResponse)
+@limiter.limit("2/minute")
+async def resend_verification(request: Request, body: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
+    """Resend email verification. Rate limited: 2/minute."""
+    service = AuthService(db)
+    await service.resend_verification(email=body.email)
+    return MessageResponse(
+        message="If an unverified account with that email exists, we've sent a verification link."
+    )
