@@ -51,7 +51,7 @@ tasks:
   - name: qa_scoring
     type: question_answering
     # data_path: data/sample_qa_transcripts.jsonl
-    data_path: data/data/synthetic_qa_metrics_data_v01x.json
+    data_path: data/data/synthetic_qa.json
     text_column: transcript
     label_column: labels
     heads:
