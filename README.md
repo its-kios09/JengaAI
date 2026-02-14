@@ -54,7 +54,7 @@ Use our open-sourced African language models or bring any model from HuggingFace
 ### Install
 
 ```bash
-git clone https://github.com/Rogendo/Jenga-AI.git
+git clone https://github.com/Rogendo/JengaAI.git
 cd JengaAI
 python -m venv venv && source venv/bin/activate
 pip install -e .
@@ -69,7 +69,7 @@ Don't need fusion? Just pick a model, pick a task, and train. This is the simple
 project_name: "hate-speech-detector"
 
 model:
-  name: "jenga-ai/SwahiliBERT"       # our pre-trained Swahili model
+  name: "jengaai/SwahiliBERT"       # our pre-trained Swahili model
 
 fusion:
   type: "none"                         # no fusion needed for single task
