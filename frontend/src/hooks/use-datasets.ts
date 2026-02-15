@@ -1,5 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchDatasets, fetchDataset, fetchDatasetPreview, fetchLabelDistribution, uploadDataset } from '@/api/datasets.ts';
+import {
+  fetchDatasets,
+  fetchDataset,
+  fetchDatasetPreview,
+  fetchLabelDistribution,
+  uploadDataset,
+  deleteDataset,
+} from '@/api/datasets.ts';
 
 export function useDatasets() {
   return useQuery({ queryKey: ['datasets'], queryFn: fetchDatasets });
@@ -21,6 +28,14 @@ export function useUploadDataset() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (file: File) => uploadDataset(file),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['datasets'] }),
+  });
+}
+
+export function useDeleteDataset() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteDataset(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['datasets'] }),
   });
 }
