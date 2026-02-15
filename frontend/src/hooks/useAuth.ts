@@ -59,6 +59,23 @@ const authApi = {
   verifyEmail: (code: string) =>
     apiClient.post<MessageResponse>(`/auth/verify-email?code=${code}`).then((r) => r.data),
 
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    apiClient.post<MessageResponse>('/auth/change-password', {
+      current_password: data.currentPassword,
+      new_password: data.newPassword,
+    }).then((r) => r.data),
+
+  uploadAvatar: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiClient.post<UserResponse>('/auth/me/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then((r) => r.data);
+  },
+
+  deleteAvatar: () =>
+    apiClient.delete<UserResponse>('/auth/me/avatar').then((r) => r.data),
+
   resendVerification: (email: string) =>
     apiClient.post<MessageResponse>('/auth/resend-verification', { email }).then((r) => r.data),
 };
@@ -149,6 +166,35 @@ export function useUpdateProfile() {
 
   return useMutation({
     mutationFn: authApi.updateProfile,
+    onSuccess: (user) => {
+      queryClient.setQueryData(['session'], user);
+    },
+  });
+}
+
+/** Change password mutation */
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: authApi.changePassword,
+  });
+}
+
+/** Upload avatar mutation */
+export function useUploadAvatar() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: authApi.uploadAvatar,
+    onSuccess: (user) => {
+      queryClient.setQueryData(['session'], user);
+    },
+  });
+}
+
+/** Delete avatar mutation */
+export function useDeleteAvatar() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: authApi.deleteAvatar,
     onSuccess: (user) => {
       queryClient.setQueryData(['session'], user);
     },

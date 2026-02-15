@@ -242,6 +242,20 @@ class AuthService:
         await self.db.commit()
         logger.info("Password reset for: %s", user.email)
 
+
+    # ── Change password ───────────────────────────────
+
+    async def change_password(self, user_id: UUID, current_password: str, new_password: str) -> None:
+        user = await self.db.get(User, user_id)
+        if not user:
+            raise ValueError("User not found")
+        if not verify_password(current_password, user.hashed_password):
+            raise ValueError("Current password is incorrect")
+        user.hashed_password = hash_password(new_password)
+        user.updated_at = datetime.now(timezone.utc)
+        await self.db.commit()
+        logger.info("Password changed for: %s", user.email)
+
     # ── Helpers ───────────────────────────────────────
 
     async def _get_user_by_email(self, email: str) -> Optional[User]:

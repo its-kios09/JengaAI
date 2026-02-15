@@ -19,6 +19,7 @@ import { TemplateGalleryPage } from '@/pages/templates/TemplateGalleryPage';
 import { ComputeMarketplacePage } from '@/pages/compute/ComputeMarketplacePage';
 import { PipelineEditorPage } from '@/pages/pipeline/PipelineEditorPage';
 import { TeachableMachinePage } from '@/pages/teachable/TeachableMachinePage';
+import { ProfilePage } from '@/pages/profile/ProfilePage';
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
           <Route element={<AppLayout />}>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/projects" element={<ProjectListPage />} />
             <Route path="/projects/new" element={<ProjectWizardPage />} />
             <Route path="/projects/:id" element={<ProjectDetailPage />} />

@@ -5,6 +5,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
@@ -51,6 +53,10 @@ async def add_request_id(request: Request, call_next):
 async def health_check():
     return {"status": "ok", "version": settings.APP_VERSION}
 
+
+# Static files (avatars)
+Path("uploads/avatars").mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # --- API Routers ---
 from app.api.v1 import auth, compute  # noqa: E402

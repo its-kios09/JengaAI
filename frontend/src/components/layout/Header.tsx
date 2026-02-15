@@ -35,9 +35,13 @@ export function Header() {
           onClick={() => setDropdownOpen(!dropdownOpen)}
           className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
         >
-          <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-sm font-medium">
-            {user?.fullName?.charAt(0) || "U"}
-          </div>
+          {(user as any)?.avatarUrl ? (
+              <img src={(user as any).avatarUrl} alt="" className="w-8 h-8 rounded-full object-cover" />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-sm font-medium">
+                {user?.fullName?.charAt(0) || "U"}
+              </div>
+            )}
           <span className="text-sm font-medium text-surface-700 dark:text-surface-300 hidden sm:block">
             {user?.fullName || "User"}
           </span>
@@ -60,9 +64,8 @@ export function Header() {
                 </p>
               </div>
               <button
-                onClick={() => {
-                  setDropdownOpen(false);
-                }}
+                onClick={() => { navigate("/profile");
+                  setDropdownOpen(false);}}
                 className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700"
               >
                 <User size={16} /> Profile

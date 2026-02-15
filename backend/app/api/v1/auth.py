@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import logging
+import os
+import uuid as uuid_mod
+from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -12,6 +15,7 @@ from app.core.deps import get_current_user
 from app.core.rate_limit import limiter
 from app.models.user import User
 from app.schemas.auth import (
+    ChangePasswordRequest,
     ForgotPasswordRequest,
     LoginRequest,
     MessageResponse,
@@ -109,6 +113,82 @@ async def reset_password(request: Request, body: ResetPasswordRequest, db: Async
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
+
+
+
+
+AVATAR_DIR = Path("uploads/avatars")
+AVATAR_DIR.mkdir(parents=True, exist_ok=True)
+ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+MAX_AVATAR_SIZE = 5 * 1024 * 1024  # 5MB
+
+
+@router.post("/me/avatar", response_model=UserResponse)
+async def upload_avatar(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Upload or update user avatar. Max 5MB, JPEG/PNG/WebP/GIF."""
+    if file.content_type not in ALLOWED_TYPES:
+        raise HTTPException(status_code=400, detail="File must be JPEG, PNG, WebP, or GIF")
+
+    contents = await file.read()
+    if len(contents) > MAX_AVATAR_SIZE:
+        raise HTTPException(status_code=400, detail="File must be under 5MB")
+
+    ext = file.filename.rsplit(".", 1)[-1] if file.filename else "jpg"
+    filename = f"{current_user.id}_{uuid_mod.uuid4().hex[:8]}.{ext}"
+    filepath = AVATAR_DIR / filename
+
+    # Delete old avatar file if exists
+    if current_user.avatar_url:
+        old_file = Path(current_user.avatar_url.lstrip("/"))
+        if old_file.exists():
+            old_file.unlink()
+
+    with open(filepath, "wb") as f:
+        f.write(contents)
+
+    current_user.avatar_url = f"/uploads/avatars/{filename}"
+    await db.commit()
+    await db.refresh(current_user)
+    return current_user
+
+
+@router.delete("/me/avatar", response_model=UserResponse)
+async def delete_avatar(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Remove user avatar."""
+    if current_user.avatar_url:
+        old_file = Path(current_user.avatar_url.lstrip("/"))
+        if old_file.exists():
+            old_file.unlink()
+        current_user.avatar_url = None
+        await db.commit()
+        await db.refresh(current_user)
+    return current_user
+
+
+@router.post("/change-password", response_model=MessageResponse)
+async def change_password(
+    body: ChangePasswordRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Change password for authenticated user."""
+    service = AuthService(db)
+    try:
+        await service.change_password(
+            user_id=current_user.id,
+            current_password=body.current_password,
+            new_password=body.new_password,
+        )
+        return MessageResponse(message="Password changed successfully.")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
 @router.post("/verify-email", response_model=MessageResponse)
 @limiter.limit("10/minute")
