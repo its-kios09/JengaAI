@@ -71,7 +71,12 @@ server:
 
 # Frontend
 ui:
-	cd frontend && pnpm run dev
+	cd frontend && pnpm dev
+
+# clear test user from DB
+delete-user:
+	docker exec jenga-postgres psql -h localhost -U postgres -d jenga_ai -c "DELETE FROM email_verifications; DELETE FROM password_resets; DELETE FROM users;"
+
 # Dev
 install:
 	pip install -e .

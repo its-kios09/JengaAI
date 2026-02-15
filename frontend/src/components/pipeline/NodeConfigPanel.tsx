@@ -3,7 +3,7 @@ import { usePipelineStore } from '@/store/pipeline-store.ts';
 import { Input } from '@/components/ui/Input.tsx';
 import { Select } from '@/components/ui/Select.tsx';
 import { Button } from '@/components/ui/Button.tsx';
-import { mockDatasets } from '@/lib/mock-data.ts';
+import { useDatasets } from '@/hooks/use-datasets.ts';
 
 export function NodeConfigPanel() {
   const selectedNodeId = usePipelineStore((s) => s.selectedNodeId);
@@ -11,6 +11,7 @@ export function NodeConfigPanel() {
   const updateNodeData = usePipelineStore((s) => s.updateNodeData);
   const removeNode = usePipelineStore((s) => s.removeNode);
   const selectNode = usePipelineStore((s) => s.selectNode);
+  const { data: datasets } = useDatasets();
 
   const node = nodes.find((n) => n.id === selectedNodeId);
   if (!node) return null;
@@ -44,7 +45,7 @@ export function NodeConfigPanel() {
               label="Dataset"
               value={(node.data.config.datasetId as string) || ''}
               onChange={(e) => {
-                const ds = mockDatasets.find((d) => d.id === e.target.value);
+                const ds = datasets?.find((d) => d.id === e.target.value);
                 if (ds) {
                   updateConfig('datasetId', ds.id);
                   updateConfig('datasetName', ds.name);
@@ -54,9 +55,18 @@ export function NodeConfigPanel() {
                   updateNodeData(node.id, { label: ds.name });
                 }
               }}
-              options={mockDatasets.map((d) => ({ value: d.id, label: `${d.name} (${d.format})` }))}
-              placeholder="Choose dataset..."
+              options={(datasets || [])
+                .filter((d) => d.status === 'ready')
+                .map((d) => ({ value: d.id, label: `${d.name} (${d.format.toUpperCase()} · ${d.rowCount.toLocaleString()} rows)` }))}
+              placeholder={datasets?.length ? 'Choose dataset...' : 'No datasets uploaded yet'}
             />
+            {(node.data.config.datasetId as string) && (
+              <div className="text-xs text-surface-500 space-y-1">
+                <p>Format: <span className="uppercase font-medium">{node.data.config.format as string}</span></p>
+                {node.data.config.textColumn && <p>Text: <span className="font-medium">{node.data.config.textColumn as string}</span></p>}
+                {node.data.config.labelColumn && <p>Label: <span className="font-medium">{node.data.config.labelColumn as string}</span></p>}
+              </div>
+            )}
           </>
         )}
 

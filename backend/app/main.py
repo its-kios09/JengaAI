@@ -1,15 +1,15 @@
 """Jenga-AI API — FastAPI application entry point."""
-
 import uuid
 from contextlib import asynccontextmanager
-
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-
 from app.config import settings
 from app.core.rate_limit import limiter
+from app.api.v1 import auth, compute, datasets
 
 
 @asynccontextmanager
@@ -52,8 +52,12 @@ async def health_check():
     return {"status": "ok", "version": settings.APP_VERSION}
 
 
-# --- API Routers ---
-from app.api.v1 import auth, compute  # noqa: E402
+# Static files (avatars, datasets)
+Path("uploads/avatars").mkdir(parents=True, exist_ok=True)
+Path("uploads/datasets").mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
+# --- API Routers ---
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
 app.include_router(compute.router, prefix="/api/v1/compute", tags=["Compute"])
+app.include_router(datasets.router, prefix="/api/v1/datasets", tags=["Datasets"])

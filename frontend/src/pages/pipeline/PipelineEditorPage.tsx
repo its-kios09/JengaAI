@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   ReactFlow,
@@ -6,10 +6,9 @@ import {
   Controls,
   MiniMap,
   addEdge,
-  useNodesState,
-  useEdgesState,
 } from '@xyflow/react';
-import type { Connection, Edge, Node } from '@xyflow/react';
+import type { Connection, NodeChange, EdgeChange, Node } from '@xyflow/react';
+import { applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { Play, Save } from 'lucide-react';
 import { Button } from '@/components/ui/Button.tsx';
@@ -24,6 +23,7 @@ import {
   DeploymentNode,
 } from '@/components/pipeline/nodes/index.ts';
 import { pipelineTemplates } from '@/lib/mock-pipeline-data.ts';
+import type { PipelineNode, PipelineEdge } from '@/types/pipeline.ts';
 
 const nodeTypes = {
   'data-source': DataSourceNode,
@@ -37,44 +37,54 @@ export function PipelineEditorPage() {
   const { id } = useParams();
   const store = usePipelineStore();
 
-  // Load template if id matches
+  // Load template on first render
   const template = id ? pipelineTemplates.find((t) => t.id === id) : null;
-  const initialNodes = template ? template.nodes : store.nodes;
-  const initialEdges = template ? template.edges : store.edges;
+  if (template && store.nodes.length === 0) {
+    store.loadPipeline(template.nodes, template.edges, template.name);
+  }
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes as Node[]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges as Edge[]);
+  const nodes = store.nodes;
+  const edges = store.edges;
+
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) => {
+      const updated = applyNodeChanges(changes, nodes as Node[]);
+      store.setNodes(updated as PipelineNode[]);
+    },
+    [nodes, store],
+  );
+
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) => {
+      const updated = applyEdgeChanges(changes, edges as any[]);
+      store.setEdges(updated as PipelineEdge[]);
+    },
+    [edges, store],
+  );
 
   const onConnect = useCallback(
     (params: Connection) => {
-      setEdges((eds) => addEdge(params, eds));
+      const updated = addEdge(params, edges as any[]);
+      store.setEdges(updated as PipelineEdge[]);
     },
-    [setEdges],
+    [edges, store],
   );
 
-  const handleSave = () => {
-    store.setNodes(nodes as typeof store.nodes);
-    store.setEdges(edges as typeof store.edges);
-  };
-
   const handleRun = () => {
-    // Mark all configured nodes as running, then completed after delay
-    const configuredIds = nodes.filter((n) => (n.data as { status: string }).status === 'configured').map((n) => n.id);
-    setNodes((nds) =>
-      nds.map((n) =>
-        configuredIds.includes(n.id) ? { ...n, data: { ...n.data, status: 'running' } } : n,
-      ),
-    );
+    const configuredIds = nodes
+      .filter((n) => n.data.status === 'configured')
+      .map((n) => n.id);
+
+    configuredIds.forEach((nid) => {
+      store.updateNodeData(nid, { status: 'running' });
+    });
+
     setTimeout(() => {
-      setNodes((nds) =>
-        nds.map((n) =>
-          configuredIds.includes(n.id) ? { ...n, data: { ...n.data, status: 'completed' } } : n,
-        ),
-      );
+      configuredIds.forEach((nid) => {
+        store.updateNodeData(nid, { status: 'completed' });
+      });
     }, 3000);
   };
-
-  useMemo(() => nodes.find((n) => n.id === store.selectedNodeId), [nodes, store.selectedNodeId]);
 
   return (
     <div className="flex flex-col h-[calc(100vh-64px)]">
@@ -83,14 +93,14 @@ export function PipelineEditorPage() {
         <div className="flex items-center gap-3">
           <input
             type="text"
-            value={template?.name || store.pipelineName}
+            value={store.pipelineName}
             onChange={(e) => store.setPipelineName(e.target.value)}
             className="text-lg font-semibold bg-transparent border-none outline-none text-surface-900 dark:text-surface-100 w-72"
           />
           <span className="text-xs text-surface-400 dark:text-surface-500">{nodes.length} nodes</span>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" icon={<Save size={14} />} onClick={handleSave}>
+          <Button variant="ghost" size="sm" icon={<Save size={14} />}>
             Save
           </Button>
           <Button size="sm" icon={<Play size={14} />} onClick={handleRun}>
@@ -105,8 +115,8 @@ export function PipelineEditorPage() {
 
         <div className="flex-1 relative">
           <ReactFlow
-            nodes={nodes}
-            edges={edges}
+            nodes={nodes as Node[]}
+            edges={edges as any[]}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}

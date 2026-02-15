@@ -50,7 +50,15 @@ class AuthService:
         await self.db.commit()
         await self.db.refresh(user)
 
-        await self._send_verification_email(user)
+        # Auto-verify in dev mode if Resend not configured
+        from app.config import settings
+        if settings.DEBUG and not settings.RESEND_API_KEY:
+            user.is_verified = True
+            await self.db.commit()
+            await self.db.refresh(user)
+            logger.info("DEV MODE — Auto-verified user: %s", user.email)
+        else:
+            await self._send_verification_email(user)
 
         logger.info("User registered: %s", user.email)
         return user
@@ -97,6 +105,14 @@ class AuthService:
                 raise ValueError("Email already in use")
             user.email = email.lower().strip()
             user.is_verified = False
+            # Auto-verify in dev mode if Resend not configured
+        from app.config import settings
+        if settings.DEBUG and not settings.RESEND_API_KEY:
+            user.is_verified = True
+            await self.db.commit()
+            await self.db.refresh(user)
+            logger.info("DEV MODE — Auto-verified user: %s", user.email)
+        else:
             await self._send_verification_email(user)
         if full_name:
             user.full_name = full_name.strip()
@@ -136,7 +152,15 @@ class AuthService:
         user = await self._get_user_by_email(email.lower().strip())
         if not user or user.is_verified:
             return
-        await self._send_verification_email(user)
+        # Auto-verify in dev mode if Resend not configured
+        from app.config import settings
+        if settings.DEBUG and not settings.RESEND_API_KEY:
+            user.is_verified = True
+            await self.db.commit()
+            await self.db.refresh(user)
+            logger.info("DEV MODE — Auto-verified user: %s", user.email)
+        else:
+            await self._send_verification_email(user)
 
     async def _send_verification_email(self, user: User) -> None:
         existing = await self.db.execute(
@@ -217,6 +241,20 @@ class AuthService:
         reset.used = True
         await self.db.commit()
         logger.info("Password reset for: %s", user.email)
+
+
+    # ── Change password ───────────────────────────────
+
+    async def change_password(self, user_id: UUID, current_password: str, new_password: str) -> None:
+        user = await self.db.get(User, user_id)
+        if not user:
+            raise ValueError("User not found")
+        if not verify_password(current_password, user.hashed_password):
+            raise ValueError("Current password is incorrect")
+        user.hashed_password = hash_password(new_password)
+        user.updated_at = datetime.now(timezone.utc)
+        await self.db.commit()
+        logger.info("Password changed for: %s", user.email)
 
     # ── Helpers ───────────────────────────────────────
 
