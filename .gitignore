@@ -51,3 +51,7 @@ mlruns/
 results/*
 
 results/
+
+#uploads
+backend/uploads/
+backend/uploads/

@@ -23,6 +23,9 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(
         String(255), nullable=False
     )
+    avatar_url: Mapped[str] = mapped_column(
+        String(512), nullable=True, default=None
+    )
     is_active: Mapped[bool] = mapped_column(
         Boolean, default=True
     )
