@@ -2,43 +2,50 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Shield, Mail, Lock } from 'lucide-react';
-import { Input } from '@/components/ui/Input.tsx';
-import { Button } from '@/components/ui/Button.tsx';
-import { Card, CardContent } from '@/components/ui/Card.tsx';
-import { useAuthStore } from '@/store/auth-store.ts';
-import { login } from '@/api/auth.ts';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent } from '@/components/ui/Card';
+import { useLogin, useResendVerification } from '@/hooks/useAuth';
 
 export function LoginPage() {
-  const [email, setEmail] = useState('analyst@jenga.ai');
-  const [password, setPassword] = useState('password');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const loginStore = useAuthStore((s) => s.login);
+  const [needsVerification, setNeedsVerification] = useState(false);
   const navigate = useNavigate();
+  const loginMutation = useLogin();
+  const resendMutation = useResendVerification();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+    setNeedsVerification(false);
     if (!email || !password) {
       setError('Email and password are required');
       return;
     }
-    setLoading(true);
-    try {
-      const res = await login({ email, password });
-      loginStore(res.user, res.tokens);
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
-    } finally {
-      setLoading(false);
-    }
+    loginMutation.mutate(
+      { email, password },
+      {
+        onSuccess: () => navigate('/dashboard'),
+        onError: (err: any) => {
+          const message = err?.response?.data?.detail || err.message || 'Login failed';
+          if (message.toLowerCase().includes('verify')) {
+            setNeedsVerification(true);
+          }
+          setError(message);
+        },
+      },
+    );
+  };
+
+  const handleResend = () => {
+    resendMutation.mutate(email);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-50 dark:bg-surface-950 px-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3 mb-2">
             <Shield size={32} className="text-primary-500" />
@@ -67,8 +74,31 @@ export function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
               />
-              {error && <p className="text-sm text-danger-500">{error}</p>}
-              <Button type="submit" className="w-full" loading={loading}>
+              {error && (
+                <div className="space-y-2">
+                  <p className="text-sm text-danger-500">{error}</p>
+                  {needsVerification && (
+                    <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                      <p className="text-sm text-amber-800 dark:text-amber-200 mb-2">
+                        Check your inbox for a verification email.
+                      </p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleResend}
+                        loading={resendMutation.isPending}
+                      >
+                        Resend verification email
+                      </Button>
+                      {resendMutation.isSuccess && (
+                        <p className="text-xs text-success-500 mt-1">Verification email resent!</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+              <Button type="submit" className="w-full" loading={loginMutation.isPending}>
                 Sign in
               </Button>
             </form>
@@ -85,10 +115,6 @@ export function LoginPage() {
             </div>
           </CardContent>
         </Card>
-
-        <p className="mt-6 text-center text-xs text-surface-400 dark:text-surface-500">
-          Demo credentials: analyst@jenga.ai / password
-        </p>
       </div>
     </div>
   );
