@@ -53,4 +53,5 @@ results/*
 results/
 
 #uploads
-backend/uploads/avatarsbackend/uploads/
+backend/uploads/
+backend/uploads/
