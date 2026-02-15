@@ -1,6 +1,18 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { User, AuthTokens } from '@/types/index.ts';
+
+type User = {
+  id: string;
+  email: string;
+  fullName: string;
+  avatarUrl?: string;
+  createdAt: string;
+};
+
+type AuthTokens = {
+  accessToken: string;
+  refreshToken: string;
+};
 
 type AuthState = {
   user: User | null;
