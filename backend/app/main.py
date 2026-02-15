@@ -10,6 +10,7 @@ from slowapi.errors import RateLimitExceeded
 
 from app.config import settings
 from app.core.rate_limit import limiter
+from app.api.v1 import auth, compute, datasets
 
 
 @asynccontextmanager
@@ -52,8 +53,14 @@ async def health_check():
     return {"status": "ok", "version": settings.APP_VERSION}
 
 
+<<<<<<< Updated upstream
 # --- API Routers ---
 from app.api.v1 import auth, compute  # noqa: E402
+=======
+Path("uploads/avatars").mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+>>>>>>> Stashed changes
 
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
 app.include_router(compute.router, prefix="/api/v1/compute", tags=["Compute"])
+app.include_router(datasets.router, prefix="/api/v1/datasets", tags=["Datasets"])

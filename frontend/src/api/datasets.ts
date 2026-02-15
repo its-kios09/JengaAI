@@ -1,42 +1,35 @@
 import type { Dataset, DatasetPreview, LabelDistribution } from '@/types/index.ts';
-import { delay, mockDatasets, mockDatasetPreview, mockLabelDistribution } from '@/lib/mock-data.ts';
+import { apiClient } from '@/api/client';
 
 export async function fetchDatasets(): Promise<Dataset[]> {
-  await delay(400);
-  return mockDatasets;
+  const res = await apiClient.get('/datasets');
+  return res.data;
 }
 
 export async function fetchDataset(id: string): Promise<Dataset> {
-  await delay(300);
-  const dataset = mockDatasets.find((d) => d.id === id);
-  if (!dataset) throw new Error('Dataset not found');
-  return dataset;
+  const res = await apiClient.get(`/datasets/${id}`);
+  return res.data;
 }
 
 export async function fetchDatasetPreview(id: string): Promise<DatasetPreview> {
-  await delay(300);
-  void id;
-  return mockDatasetPreview;
+  const res = await apiClient.get(`/datasets/${id}/preview`);
+  return res.data;
 }
 
 export async function fetchLabelDistribution(id: string): Promise<LabelDistribution[]> {
-  await delay(200);
-  void id;
-  return mockLabelDistribution;
+  const res = await apiClient.get(`/datasets/${id}/distribution`);
+  return res.data;
 }
 
-export async function uploadDataset(_file: File): Promise<Dataset> {
-  await delay(1500);
-  return {
-    id: `ds_${Date.now()}`,
-    name: _file.name,
-    description: 'Uploaded dataset',
-    format: 'csv',
-    size: _file.size,
-    rowCount: 1000,
-    columnCount: 4,
-    columns: ['text', 'label', 'source', 'date'],
-    status: 'ready',
-    createdAt: new Date().toISOString(),
-  };
+export async function uploadDataset(file: File): Promise<Dataset> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await apiClient.post('/datasets', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return res.data;
+}
+
+export async function deleteDataset(id: string): Promise<void> {
+  await apiClient.delete(`/datasets/${id}`);
 }

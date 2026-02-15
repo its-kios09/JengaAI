@@ -56,11 +56,10 @@ export function NodePalette() {
 
   const handleAddNode = (item: PaletteItem) => {
     nodeIdCounter++;
-    const yOffset = nodes.length * 30;
     addNode({
       id: `node_${nodeIdCounter}`,
       type: item.type,
-      position: { x: 200 + nodes.length * 280, y: 200 + yOffset % 100 },
+      position: { x: 250 + (nodes.length % 3) * 280, y: 150 + Math.floor(nodes.length / 3) * 180 },
       data: { ...item.defaultData },
     });
   };
