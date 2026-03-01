@@ -26,8 +26,13 @@ export function NodeConfigPanel() {
   return (
     <div className="w-72 border-l border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 overflow-y-auto">
       <div className="flex items-center justify-between px-4 py-3 border-b border-surface-200 dark:border-surface-700">
-        <h3 className="text-sm font-semibold text-surface-900 dark:text-surface-100">Configure Node</h3>
-        <button onClick={() => selectNode(null)} className="p-1 rounded hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-400">
+        <h3 className="text-sm font-semibold text-surface-900 dark:text-surface-100">
+          Configure Node
+        </h3>
+        <button
+          onClick={() => selectNode(null)}
+          className="p-1 rounded hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-400"
+        >
           <X size={16} />
         </button>
       </div>
@@ -39,47 +44,79 @@ export function NodeConfigPanel() {
           onChange={(e) => updateNodeData(node.id, { label: e.target.value })}
         />
 
-        {node.data.nodeType === 'data-source' && (
+        {node.data.nodeType === "data-source" && (
           <>
             <Select
               label="Dataset"
-              value={(node.data.config.datasetId as string) || ''}
+              value={(node.data.config.datasetId as string) || ""}
               onChange={(e) => {
                 const ds = datasets?.find((d) => d.id === e.target.value);
                 if (ds) {
-                  updateConfig('datasetId', ds.id);
-                  updateConfig('datasetName', ds.name);
-                  updateConfig('format', ds.format);
-                  updateConfig('textColumn', ds.textColumn);
-                  updateConfig('labelColumn', ds.labelColumn);
+                  updateConfig("datasetId", ds.id);
+                  updateConfig("datasetName", ds.name);
+                  updateConfig("format", ds.format);
+                  updateConfig("textColumn", ds.textColumn);
+                  updateConfig("labelColumn", ds.labelColumn);
                   updateNodeData(node.id, { label: ds.name });
                 }
               }}
               options={(datasets || [])
-                .filter((d) => d.status === 'ready')
-                .map((d) => ({ value: d.id, label: `${d.name} (${d.format.toUpperCase()} · ${d.rowCount.toLocaleString()} rows)` }))}
-              placeholder={datasets?.length ? 'Choose dataset...' : 'No datasets uploaded yet'}
+                .filter((d) => d.status === "ready")
+                .map((d) => ({
+                  value: d.id,
+                  label: `${d.name} (${d.format.toUpperCase()} · ${d.rowCount.toLocaleString()} rows)`,
+                }))}
+              placeholder={
+                datasets?.length
+                  ? "Choose dataset..."
+                  : "No datasets uploaded yet"
+              }
             />
             {(node.data.config.datasetId as string) && (
               <div className="text-xs text-surface-500 space-y-1">
-                <p>Format: <span className="uppercase font-medium">{node.data.config.format as string}</span></p>
-                {node.data.config.textColumn && <p>Text: <span className="font-medium">{node.data.config.textColumn as string}</span></p>}
-                {node.data.config.labelColumn && <p>Label: <span className="font-medium">{node.data.config.labelColumn as string}</span></p>}
+                <p>
+                  Format:{" "}
+                  <span className="uppercase font-medium">
+                    {node.data.config.format as string}
+                  </span>
+                </p>
+                {node.data.config.textColumn && (
+                  <p>
+                    Text:{" "}
+                    <span className="font-medium">
+                      {node.data.config.textColumn as string}
+                    </span>
+                  </p>
+                )}
+                {node.data.config.labelColumn && (
+                  <p>
+                    Label:{" "}
+                    <span className="font-medium">
+                      {node.data.config.labelColumn as string}
+                    </span>
+                  </p>
+                )}
               </div>
             )}
           </>
         )}
 
-        {node.data.nodeType === 'preprocessor' && (
+        {node.data.nodeType === "preprocessor" && (
           <>
             <Select
               label="Tokenizer"
-              value={(node.data.config.tokenizer as string) || ''}
-              onChange={(e) => updateConfig('tokenizer', e.target.value)}
+              value={(node.data.config.tokenizer as string) || ""}
+              onChange={(e) => updateConfig("tokenizer", e.target.value)}
               options={[
-                { value: 'bert-base-multilingual-cased', label: 'BERT Multilingual' },
-                { value: 'xlm-roberta-base', label: 'XLM-RoBERTa' },
-                { value: 'distilbert-base-multilingual-cased', label: 'DistilBERT Multilingual' },
+                {
+                  value: "bert-base-multilingual-cased",
+                  label: "BERT Multilingual",
+                },
+                { value: "xlm-roberta-base", label: "XLM-RoBERTa" },
+                {
+                  value: "distilbert-base-multilingual-cased",
+                  label: "DistilBERT Multilingual",
+                },
               ]}
               placeholder="Select tokenizer..."
             />
@@ -87,43 +124,60 @@ export function NodeConfigPanel() {
               label="Max Length"
               type="number"
               value={String(node.data.config.maxLength || 256)}
-              onChange={(e) => updateConfig('maxLength', Number(e.target.value))}
+              onChange={(e) =>
+                updateConfig("maxLength", Number(e.target.value))
+              }
             />
             <label className="flex items-center gap-2 text-sm text-surface-700 dark:text-surface-300">
               <input
                 type="checkbox"
                 checked={Boolean(node.data.config.lowercase)}
-                onChange={(e) => updateConfig('lowercase', e.target.checked)}
+                onChange={(e) => updateConfig("lowercase", e.target.checked)}
                 className="rounded border-surface-300 text-primary-600 focus:ring-primary-500"
               />
               Lowercase text
             </label>
+            <label className="flex items-center gap-2 text-sm text-surface-700 dark:text-surface-300">
+              <input
+                type="checkbox"
+                checked={Boolean(node.data.config.lowercase)}
+                onChange={(e) => updateConfig("lowercase", e.target.checked)}
+                className="rounded border-surface-300 text-primary-600 focus:ring-primary-500"
+              />
+              Add PII reduction
+            </label>
           </>
         )}
 
-        {node.data.nodeType === 'model' && (
+        {node.data.nodeType === "model" && (
           <>
             <Select
               label="Model"
-              value={(node.data.config.modelName as string) || ''}
-              onChange={(e) => updateConfig('modelName', e.target.value)}
+              value={(node.data.config.modelName as string) || ""}
+              onChange={(e) => updateConfig("modelName", e.target.value)}
               options={[
-                { value: 'bert-base-multilingual-cased', label: 'BERT Multilingual' },
-                { value: 'xlm-roberta-base', label: 'XLM-RoBERTa' },
-                { value: 'distilbert-base-multilingual-cased', label: 'DistilBERT Multilingual' },
-                { value: 'bert-base-uncased', label: 'BERT Base' },
+                {
+                  value: "bert-base-multilingual-cased",
+                  label: "BERT Multilingual",
+                },
+                { value: "xlm-roberta-base", label: "XLM-RoBERTa" },
+                {
+                  value: "distilbert-base-multilingual-cased",
+                  label: "DistilBERT Multilingual",
+                },
+                { value: "bert-base-uncased", label: "BERT Base" },
               ]}
               placeholder="Select model..."
             />
             <Select
               label="Task Type"
-              value={(node.data.config.taskType as string) || ''}
-              onChange={(e) => updateConfig('taskType', e.target.value)}
+              value={(node.data.config.taskType as string) || ""}
+              onChange={(e) => updateConfig("taskType", e.target.value)}
               options={[
-                { value: 'classification', label: 'Classification' },
-                { value: 'ner', label: 'Named Entity Recognition' },
-                { value: 'sentiment', label: 'Sentiment Analysis' },
-                { value: 'regression', label: 'Regression' },
+                { value: "classification", label: "Classification" },
+                { value: "ner", label: "Named Entity Recognition" },
+                { value: "sentiment", label: "Sentiment Analysis" },
+                { value: "regression", label: "Regression" },
               ]}
               placeholder="Select task..."
             />
@@ -131,50 +185,58 @@ export function NodeConfigPanel() {
               label="Number of Labels"
               type="number"
               value={String(node.data.config.numLabels || 2)}
-              onChange={(e) => updateConfig('numLabels', Number(e.target.value))}
+              onChange={(e) =>
+                updateConfig("numLabels", Number(e.target.value))
+              }
             />
           </>
         )}
 
-        {node.data.nodeType === 'training' && (
+        {node.data.nodeType === "training" && (
           <>
             <Input
               label="Epochs"
               type="number"
               value={String(node.data.config.epochs || 5)}
-              onChange={(e) => updateConfig('epochs', Number(e.target.value))}
+              onChange={(e) => updateConfig("epochs", Number(e.target.value))}
             />
             <Input
               label="Learning Rate"
               type="number"
               value={String(node.data.config.learningRate || 5e-5)}
-              onChange={(e) => updateConfig('learningRate', Number(e.target.value))}
+              onChange={(e) =>
+                updateConfig("learningRate", Number(e.target.value))
+              }
             />
             <Input
               label="Batch Size"
               type="number"
               value={String(node.data.config.batchSize || 32)}
-              onChange={(e) => updateConfig('batchSize', Number(e.target.value))}
+              onChange={(e) =>
+                updateConfig("batchSize", Number(e.target.value))
+              }
             />
             <Input
               label="Warmup Steps"
               type="number"
               value={String(node.data.config.warmupSteps || 500)}
-              onChange={(e) => updateConfig('warmupSteps', Number(e.target.value))}
+              onChange={(e) =>
+                updateConfig("warmupSteps", Number(e.target.value))
+              }
             />
           </>
         )}
 
-        {node.data.nodeType === 'deployment' && (
+        {node.data.nodeType === "deployment" && (
           <>
             <Select
               label="Deploy Target"
-              value={(node.data.config.target as string) || ''}
-              onChange={(e) => updateConfig('target', e.target.value)}
+              value={(node.data.config.target as string) || ""}
+              onChange={(e) => updateConfig("target", e.target.value)}
               options={[
-                { value: 'api', label: 'REST API' },
-                { value: 'export', label: 'Export (ONNX)' },
-                { value: 'download', label: 'Download Model' },
+                { value: "api", label: "REST API" },
+                { value: "export", label: "Export (ONNX)" },
+                { value: "download", label: "Download Model" },
               ]}
               placeholder="Select target..."
             />
@@ -182,7 +244,12 @@ export function NodeConfigPanel() {
         )}
 
         <div className="pt-4 border-t border-surface-200 dark:border-surface-700">
-          <Button variant="danger" size="sm" className="w-full" onClick={() => removeNode(node.id)}>
+          <Button
+            variant="danger"
+            size="sm"
+            className="w-full"
+            onClick={() => removeNode(node.id)}
+          >
             Remove Node
           </Button>
         </div>

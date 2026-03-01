@@ -12,18 +12,19 @@ export function VerifyEmailPage() {
     code ? 'loading' : 'no-code'
   );
   const calledRef = useRef(false);
+  console.log('apiClient', apiClient.defaults.baseURL);
 
   useEffect(() => {
     if (code && !calledRef.current) {
       calledRef.current = true;
       
       axios
-        .post(`${apiClient.defaults.baseURL}/verify-email?code=${code}`)
+        .post(`${apiClient.defaults.baseURL}/auth/verify-email?code=${code}`)
         .then((res) => {
-          setStatus('success');
+          setStatus("success");
         })
         .catch((err) => {
-          setStatus('error');
+          setStatus("error");
         });
     }
   }, [code]);
